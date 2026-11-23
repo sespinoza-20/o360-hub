@@ -60,6 +60,9 @@ summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--green)}
 .bad{background:#fbe9e9;border-left:4px solid #b3261e;padding:8px 10px;border-radius:6px;margin:8px 0}
 .good{background:var(--ok);border-left:4px solid var(--ipa);padding:8px 10px;border-radius:6px;margin:8px 0}
 .tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:6px;background:#fff;color:var(--blue)}
+.ct{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:34px;line-height:1.1;color:var(--green);margin:6px 0 12px}
+.ct:after{content:"";display:block;width:56px;height:3px;background:var(--ipa);margin-top:8px}
+.cp{font-size:19px;line-height:1.6;margin:0 0 14px}
 .hide{display:none!important}
 footer{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 footer img{height:24px;width:auto}
@@ -92,8 +95,8 @@ footer p{margin:0;font-size:12.5px;color:#5d5d5f;flex:1 1 260px}
 </div>
 <div class="tabs" id="tabs" role="group" aria-label="Escenario"></div>
 <section>
-  <h2 id="sTitle">Escenario 1</h2>
-  <p class="sc" id="sText"></p>
+  <h2 class="ct" id="sTitle">Escenario 1</h2>
+  <p class="cp" id="sText"></p>
   <div class="card">
     <h3>Consigna</h3>
     <p>Lean el escenario. Marquen en su lista los indicadores que observan, verifiquen si pueden describirlos y anoten qué situación sugieren.</p>
