@@ -69,7 +69,7 @@ footer img{height:24px;width:auto}
 footer p{margin:0;font-size:12.5px;color:#5d5d5f;flex:1 1 260px}
 
 .bar{display:grid;grid-template-columns:1fr;gap:10px;margin:8px 0}
-@media(min-width:720px){.bar{grid-template-columns:1.6fr auto auto auto auto}}
+@media(min-width:720px){.bar{grid-template-columns:1.6fr auto auto}}
 .stat{font-size:13px;color:#5d5d5f;margin:2px 0 8px}
 .ctxbar{display:flex;gap:14px;align-items:center;background:var(--ctx);border-radius:12px;padding:10px 14px}
 .ctxbar img{width:64px;height:52px;object-fit:contain;flex:none}
@@ -98,7 +98,11 @@ footer p{margin:0;font-size:12.5px;color:#5d5d5f;flex:1 1 260px}
 .pill{display:inline-block;background:var(--grey);border-radius:12px;padding:3px 11px;margin:2px 4px 2px 0;font-size:15px}
 .pill.ok{background:var(--ok)}.pill.no{background:#fbe9e9}
 .tools{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}.tools button{min-height:38px;padding:4px 12px;font-size:14px}
-body.proj{font-size:20px}body.proj .rb p,body.proj .irow{font-size:22px}body.proj .rb .q{font-size:30px}body.proj .ct{font-size:48px}body.proj .cp{font-size:25px}body.proj .sit p,body.proj .sit li{font-size:22px}
+body{font-size:20px}.wrap{max-width:1600px;padding:14px 28px 28px}h1{font-size:40px}
+.card p,.card .lbl{font-size:20px}select,button{font-size:20px}select{padding:12px 14px}button{min-height:52px}.tools button{min-height:46px;font-size:18px}.stat{font-size:16px}
+.rb p,.irow{font-size:24px}.irow b{width:34px;height:34px;font-size:16px}.rb .q{font-size:34px}.ct{font-size:52px}.cp{font-size:28px;line-height:1.55}.sit p,.sit li{font-size:24px}.sit img{width:72px;height:72px}.sit .sec{font-size:14px}
+.qbox{font-size:34px}.ctxbar{font-size:24px}.ctxbar img{width:84px;height:68px}.pfx .txt{font-size:30px}.pfx .num{width:52px;height:52px;font-size:24px}
+.gn{font-size:22px;padding:4px 16px}.sn{font-size:22px}.pv{font-size:19px}.gt{font-size:15px}.pill{font-size:20px;padding:4px 14px}.rb .ans h3{font-size:28px}.resp>summary{padding:16px 18px}.rb{padding:8px 24px 22px}
 </style>
 </head>
 <body>
@@ -112,15 +116,14 @@ body.proj{font-size:20px}body.proj .rb p,body.proj .irow{font-size:22px}body.pro
   <div class="bar">
     <div><label class="lbl" for="act">Actividad</label>
       <select id="act">
-        <option value="T22">T2.2 · Preguntas que orientan</option>
-        <option value="T3">T3 · Galería de indicadores</option>
-        <option value="T4">T4 · Espejo de la empatía</option>
-        <option value="T51">T5.1 · Hoja de la Central</option>
-        <option value="T6">T6 · Teléfono directo</option>
+        <option value="T22">Actividad 3 · Preguntas que orientan</option>
+        <option value="T3">Actividad 5 · Galería de indicadores</option>
+        <option value="T4">Actividad 6 · Espejo de la empatía</option>
+        <option value="T51">Actividad 7 · Filtro de la seguridad (Central)</option>
+        <option value="T6">Actividad 9 · Teléfono directo</option>
       </select></div>
     <div style="align-self:end"><button id="refresh">Actualizar</button></div>
-    <div style="align-self:end"><button id="proj" class="ghost" aria-pressed="false">Letra grande</button></div>
-    <div style="align-self:end"><button id="clearTop" class="ghost" style="border-color:#b3261e;color:#b3261e">Borrar respuestas (reiniciar)</button></div>
+        <div style="align-self:end"><button id="clearTop" class="ghost" style="border-color:#b3261e;color:#b3261e">Borrar respuestas (reiniciar)</button></div>
   </div>
   <div class="stat" id="stat"></div>
   <div class="tools"><button id="openAll" class="ghost">Abrir todas</button><button id="closeAll" class="ghost">Cerrar todas</button><button id="revealBtn" class="ghost hide">Mostrar la respuesta prioritaria</button></div>
@@ -200,18 +203,14 @@ H.wire = function(boxId, getRec, getText){
     var b = this; b.disabled = true;
     H.send(getRec(), function(ok, mode){
       b.disabled = false;
-      if (!ok) msg.textContent = 'No se pudo enviar. Revisa tu señal o usa «Copiar respuesta codificada».';
+      if (!ok) msg.textContent = 'No se pudo enviar. Revisa tu señal o vuelve a intentar.';
       else if (mode === 'local') msg.textContent = 'Modo de prueba: el envío se guardó solo en este navegador. Aún no está conectado a la pantalla del ponente.';
       else msg.textContent = 'Enviado. Tu respuesta ya aparece en la pantalla del ponente. Si corriges algo, vuelve a enviar: cuenta la última versión.';
     });
   };
-  box.querySelector('.js-copy').onclick = function(){ O.copy(getText(), function(ok){ msg.textContent = ok ? 'Resumen copiado. Pégalo en el chat de tu grupo.' : 'No se pudo copiar. Mantén presionado el texto para copiarlo.'; }); };
-  box.querySelector('.js-code').onclick = function(){ O.copy(H.encode(getRec()), function(ok){ msg.textContent = ok ? 'Respuesta codificada copiada. Pégala en el chat para que el ponente la agregue.' : 'No se pudo copiar la respuesta codificada.'; }); };
-  box.querySelector('.js-back').onclick = function(){ box.classList.add('hide'); window.scrollTo({top:0, behavior:'smooth'}); };
 };
 H.show = function(boxId, text){
   var box = O.$(boxId); box.classList.remove('hide');
-  box.querySelector('.result').textContent = text;
   box.querySelector('.js-send').click();
   box.scrollIntoView({behavior:'smooth', block:'start'});
 };
@@ -290,7 +289,6 @@ function load(force){
 }
 O.$('act').onchange = function(){ sig = ''; openKeys = {}; rev = false; load(true); };
 O.$('refresh').onclick = function(){ load(true); };
-O.$('proj').onclick = function(){ var v = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(v)); document.body.classList.toggle('proj', v); };
 O.$('openAll').onclick = function(){ Array.prototype.forEach.call(document.querySelectorAll('#list details'), function(d){ d.open = true; }); };
 O.$('closeAll').onclick = function(){ Array.prototype.forEach.call(document.querySelectorAll('#list details'), function(d){ d.open = false; }); };
 O.$('revealBtn').onclick = function(){ rev = !rev; load(true); };
