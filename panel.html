@@ -78,6 +78,7 @@ footer p{margin:0;font-size:12.5px;color:#5d5d5f;flex:1 1 260px}
 .nums{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}
 .nums b{min-width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
 .nums b.n{background:var(--nna)}
+.ilist{margin:6px 0}.irow{display:flex;gap:8px;align-items:flex-start;background:var(--grey);border-radius:8px;padding:6px 8px;margin:4px 0;font-size:15px}.irow b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}.irow.n{background:var(--nna-bg)}.irow.n b{background:var(--nna)}.grid.wide{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}body.proj .grid.wide{grid-template-columns:repeat(auto-fill,minmax(520px,1fr))}body.proj .irow{font-size:19px}
 .pill{display:inline-block;background:var(--grey);border-radius:12px;padding:2px 10px;margin:2px 4px 2px 0;font-size:14px}
 .pill.ok{background:var(--ok)}.pill.no{background:#fbe9e9}
 body.proj{font-size:20px}body.proj .gc p{font-size:21px}body.proj .gc .q{font-size:27px}
@@ -224,18 +225,17 @@ function when(t){ var d = new Date(t); function z(n){ return (n < 10 ? '0' : '')
 function card(r, body){ var c = O.el('div', 'gc'); var h = O.el('div', 'gh'); h.appendChild(O.el('span', 'gn', (O.$('act').value === 'T6' ? 'Equipo ' : 'Grupo ') + r.grupo)); h.appendChild(O.el('span', 'gt', when(r.t))); c.appendChild(h); body(c, r); c.onclick = function(){ openModal(r, body); }; return c; }
 function openModal(r, body){ var mb = O.$('modalBody'); mb.innerHTML = ''; var h = O.el('h2', '', (O.$('act').value === 'T6' ? 'Equipo ' : 'Grupo ') + r.grupo); mb.appendChild(h); var tmp = O.el('div', 'gc'); tmp.style.border = '0'; body(tmp, r); mb.appendChild(tmp); O.$('modal').classList.remove('hide'); }
 O.$('modalClose').onclick = function(){ O.$('modal').classList.add('hide'); };
+function indList(arr){ var d = O.el('div', 'ilist'); if (!arr.length) { d.appendChild(O.el('p', 'small', '(ninguno)')); return d; } arr.forEach(function(n){ var row = O.el('div', 'irow' + (n >= 18 ? ' n' : '')); row.appendChild(O.el('b', '', String(n))); row.appendChild(O.el('span', '', n <= 17 ? IND_G[n-1] : IND_N[n-18])); d.appendChild(row); }); return d; }
 function nums(arr){ var d = O.el('div', 'nums'); arr.forEach(function(n){ d.appendChild(O.el('b', n >= 18 ? 'n' : '', String(n))); }); return d; }
 function renderAct(rows, a, item){
-  var g = O.$('grid'); g.innerHTML = ''; var ex = O.$('extra'); ex.innerHTML = '';
+  var g = O.$('grid'); g.innerHTML = ''; g.className = 'grid' + (a === 'T3' ? ' wide' : ''); var ex = O.$('extra'); ex.innerHTML = '';
   var L = H.latest(rows);
   if (a === 'T22'){ var q = QS[item-1]; var k = O.el('div', 'card'); k.appendChild(O.el('div', 'sec', 'Contexto')); k.appendChild(O.el('p', '', q.ctx)); k.appendChild(O.el('div', 'q', q.q)); k.querySelector('.q').style.cssText = 'font-size:24px;font-weight:700;color:#155240'; ex.appendChild(k);
     L.forEach(function(r){ g.appendChild(card(r, function(c, r){ c.appendChild(O.el('p', 'q', r.data.text || '(sin texto)')); })); }); }
   if (a === 'T3'){ var k3 = O.el('div', 'card'); k3.appendChild(O.el('h3', '', 'Escenario ' + item)); k3.appendChild(O.el('p', '', SC[item-1])); ex.appendChild(k3);
-    L.forEach(function(r){ g.appendChild(card(r, function(c, r){ c.appendChild(O.el('p', '', 'Indicadores (' + (r.data.ind || []).length + '):')); c.appendChild(nums(r.data.ind || [])); var ip = O.el('p', ''); ip.appendChild(O.el('b', '', 'Indicio: ')); ip.appendChild(document.createTextNode(r.data.indicio || '(sin descripción)')); c.appendChild(ip);
+    L.forEach(function(r){ g.appendChild(card(r, function(c, r){ c.appendChild(O.el('p', '', 'Indicadores (' + (r.data.ind || []).length + '):')); c.appendChild(indList(r.data.ind || [])); var ip = O.el('p', ''); ip.appendChild(O.el('b', '', 'Indicio: ')); ip.appendChild(document.createTextNode(r.data.indicio || '(sin descripción)')); c.appendChild(ip);
       var ep = O.el('p', ''); ep.appendChild(O.el('b', '', 'Explotación: ')); (r.data.expl || []).forEach(function(x){ ep.appendChild(O.el('span', 'pill', x)); }); if (!(r.data.expl || []).length) ep.appendChild(document.createTextNode('(sin respuesta)')); c.appendChild(ep); })); });
-    if (L.length){ var f = O.el('div', 'card freq'); f.appendChild(O.el('h3', '', 'Cuántos grupos marcaron cada indicador (de ' + L.length + ')')); var cnt = {}; L.forEach(function(r){ (r.data.ind || []).forEach(function(n){ cnt[n] = (cnt[n] || 0) + 1; }); });
-      Object.keys(cnt).map(Number).sort(function(a,b){ return cnt[b] - cnt[a] || a - b; }).slice(0, 12).forEach(function(n){ var row = O.el('div', 'fr'); row.appendChild(O.el('span', 'k', String(n))); var b = O.el('div', 'bar2' + (n >= 18 ? ' n' : '')); b.style.width = Math.round(100 * cnt[n] / L.length * 0.5 + 3) + '%'; row.appendChild(b); row.appendChild(O.el('span', '', cnt[n] + ' · ' + (n <= 17 ? IND_G[n-1] : IND_N[n-18]))); f.appendChild(row); });
-      ex.appendChild(f); } }
+  }
   if (a === 'T4'){ var s = SIT[item-1]; var k4 = O.el('div', 'card'); k4.appendChild(O.el('h3', '', 'Situación ' + item)); k4.appendChild(O.el('p', '', s.perfil + ' ' + s.crit)); ex.appendChild(k4);
     L.forEach(function(r){ g.appendChild(card(r, function(c, r){ var d = r.data; c.appendChild(O.el('p', '', 'Ronda ' + (d.ronda || 1) + ' · pautas aplicadas: ' + (d.p || []).length + ' de 6'));
       var pp = O.el('p', ''); (d.p || []).forEach(function(i){ pp.appendChild(O.el('span', 'pill ok', PAUTAS[i].t)); }); c.appendChild(pp);
@@ -258,7 +258,7 @@ function load(){
   var a = O.$('act').value, item = O.$('item').value;
   H.list(a, item, function(rows){
     if (rows === null){ O.$('stat').textContent = 'No se pudo leer la hoja. Revisa tu conexión; se vuelve a intentar sola.'; rows = lastRows; }
-    else { lastRows = rows; O.$('stat').textContent = (H.remote() ? 'Conectado a la hoja de respuestas. ' : 'Modo de prueba (solo este navegador). ') + 'Actualizado ' + when(new Date().getTime()) + ' · ' + H.latest(rows.concat(extra.filter(function(r){ return r.act === a && String(r.item) === String(item); }))).length + ' grupos.'; }
+    else { lastRows = rows; O.$('stat').textContent = (H.remote() ? 'Conectado a la hoja de respuestas. ' : 'Modo de prueba (solo este navegador). ') + 'Actualizado ' + when(new Date().getTime()) + ' · ' + H.latest(rows.concat(extra.filter(function(r){ return r.act === a && String(r.item) === String(item); }))).length + ' grupos.'; O.$('stat').textContent = O.$('stat').textContent.replace(/ 1 grupos\./, ' 1 grupo.'); }
     var all = rows.concat(extra.filter(function(r){ return r.act === a && String(r.item) === String(item); }));
     renderAct(all, a, +item);
   });
