@@ -189,6 +189,7 @@ H.wire = function(boxId, getRec, getText){
 H.show = function(boxId, text){
   var box = O.$(boxId); box.classList.remove('hide');
   box.querySelector('.result').textContent = text;
+  box.querySelector('.js-send').click();
   box.scrollIntoView({behavior:'smooth', block:'start'});
 };
 

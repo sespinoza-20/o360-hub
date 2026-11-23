@@ -112,19 +112,16 @@ footer p{margin:0;font-size:12.5px;color:#5d5d5f;flex:1 1 260px}
     <p>Si el Sereno usa el indicativo 10-46, sigue por el canal privado con la Central.</p>
   </div>
 </details>
-<div class="actions"><button class="primary" id="done">Listo: preparar envío</button><button class="ghost" id="clear">Borrar esta hoja</button></div>
+<div class="actions"><button class="primary" id="done">Enviar al ponente</button><button class="ghost" id="clear">Borrar esta hoja</button></div>
 
 <section id="sendBox" class="card ok hide" aria-live="polite">
-  <h2>Enviar al ponente</h2>
-  <p class="small">Se mostrará la respuesta de tu grupo en la pantalla del ponente. Va con el número de grupo, sin nombres. No escribas nombres de personas.</p>
-  <div class="result"></div>
-  <div class="actions">
-    <button class="primary js-send">Enviar al ponente</button>
-    <button class="js-copy">Copiar resumen</button>
-    <button class="ghost js-code">Copiar respuesta codificada</button>
-    <button class="ghost js-back">Seguir editando</button>
-  </div>
-  <p class="msg small" role="status"></p>
+  <p class="msg" role="status" style="font-weight:700;margin:0 0 8px"></p>
+  <div class="actions"><button class="ghost js-send">Volver a enviar</button><button class="ghost js-back">Seguir editando</button></div>
+  <details>
+    <summary>Si no se pudo enviar</summary>
+    <div class="result"></div>
+    <div class="actions"><button class="js-copy">Copiar resumen</button><button class="ghost js-code">Copiar respuesta codificada</button></div>
+  </details>
 </section>
 
 
@@ -212,6 +209,7 @@ H.wire = function(boxId, getRec, getText){
 H.show = function(boxId, text){
   var box = O.$(boxId); box.classList.remove('hide');
   box.querySelector('.result').textContent = text;
+  box.querySelector('.js-send').click();
   box.scrollIntoView({behavior:'smooth', block:'start'});
 };
 

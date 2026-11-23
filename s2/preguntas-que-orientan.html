@@ -99,28 +99,18 @@ footer p{margin:0;font-size:12.5px;color:#5d5d5f;flex:1 1 260px}
     </div>
   </details>
 </section>
-<div class="actions"><button class="primary" id="done">Listo: preparar envío</button><button class="ghost" id="clear">Borrar mis respuestas</button></div>
+<div class="actions"><button class="primary" id="done">Enviar al ponente</button><button class="ghost" id="clear">Borrar mis respuestas</button></div>
 
 <section id="sendBox" class="card ok hide" aria-live="polite">
-  <h2>Enviar al ponente</h2>
-  <p class="small">Se mostrará la respuesta de tu grupo en la pantalla del ponente. Va con el número de grupo, sin nombres. No escribas nombres de personas.</p>
-  <div class="result"></div>
-  <div class="actions">
-    <button class="primary js-send">Enviar al ponente</button>
-    <button class="js-copy">Copiar resumen</button>
-    <button class="ghost js-code">Copiar respuesta codificada</button>
-    <button class="ghost js-back">Seguir editando</button>
-  </div>
-  <p class="msg small" role="status"></p>
+  <p class="msg" role="status" style="font-weight:700;margin:0 0 8px"></p>
+  <div class="actions"><button class="ghost js-send">Volver a enviar</button><button class="ghost js-back">Seguir editando</button></div>
+  <details>
+    <summary>Si no se pudo enviar</summary>
+    <div class="result"></div>
+    <div class="actions"><button class="js-copy">Copiar resumen</button><button class="ghost js-code">Copiar respuesta codificada</button></div>
+  </details>
 </section>
 
-<section class="card warn">
-  <h3>Comparación con el anexo</h3>
-  <p class="small">Ábrela solo al final, cuando ya compartieron sus versiones en la plenaria.</p>
-  <button id="showModel" aria-pressed="false">Mostrar la pregunta empática del anexo</button>
-  <div id="model" class="hide"><div class="good" style="margin-top:10px"><b>Pregunta empática del anexo:</b><br><span id="modelText"></span></div>
-  <p class="small">Compara con tu versión: ¿qué cambió en el tono? ¿Se puede contestar sin sentirse acusada?</p></div>
-</section>
 <section class="card"><h3>Si la persona no quiere hablar</h3><p>«Está bien si no quieres hablar ahora, lo importante es que sepas que estamos aquí para protegerte.»</p></section>
 
 
@@ -208,6 +198,7 @@ H.wire = function(boxId, getRec, getText){
 H.show = function(boxId, text){
   var box = O.$(boxId); box.classList.remove('hide');
   box.querySelector('.result').textContent = text;
+  box.querySelector('.js-send').click();
   box.scrollIntoView({behavior:'smooth', block:'start'});
 };
 
@@ -220,17 +211,16 @@ var qs = parseInt(O.param('grupo'), 10); if (qs >= 1 && qs <= 5) st.grupo = Stri
 function persist(){ O.save(KEY, st); }
 O.grupos(O.$('grupo'), 5, 'Grupo');
 var tabs = O.$('tabs');
-QS.forEach(function(q, i){ var b = O.el('button', '', ''); b.onclick = function(){ st.cur = i; O.$('model').classList.add('hide'); O.$('showModel').setAttribute('aria-pressed','false'); O.$('showModel').textContent = 'Mostrar la pregunta empática del anexo'; persist(); render(); }; tabs.appendChild(b); });
+QS.forEach(function(q, i){ var b = O.el('button', '', ''); b.onclick = function(){ st.cur = i; persist(); render(); }; tabs.appendChild(b); });
 function tabLabels(){ Array.prototype.forEach.call(tabs.children, function(b, i){ b.textContent = 'Pregunta ' + (i+1) + (st.ans[i] && st.ans[i].trim() ? ' ✓' : ''); b.setAttribute('aria-pressed', String(i === st.cur)); }); }
 function render(){
   var q = QS[st.cur]; tabLabels();
   O.$('qic').src = q.icUri; O.$('qctx').textContent = q.ctx; O.$('qtext').textContent = q.q;
-  O.$('mine').value = st.ans[st.cur] || ''; O.$('modelText').textContent = q.m; O.$('grupo').value = st.grupo;
+  O.$('mine').value = st.ans[st.cur] || ''; O.$('grupo').value = st.grupo;
   Array.prototype.forEach.call(document.querySelectorAll('.ck'), function(c){ c.checked = false; });
 }
 O.$('mine').oninput = function(){ st.ans[st.cur] = this.value; persist(); tabLabels(); };
 O.$('grupo').onchange = function(){ st.grupo = this.value; persist(); };
-O.$('showModel').onclick = function(){ var open = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(open)); O.$('model').classList.toggle('hide', !open); this.textContent = open ? 'Ocultar la pregunta del anexo' : 'Mostrar la pregunta empática del anexo'; };
 O.$('clear').onclick = function(){ if (window.confirm('¿Borrar tus respuestas de las seis preguntas?')) { st.ans = ['','','','','','']; persist(); render(); } };
 function rec(){ return {act:'T22', item:st.cur + 1, grupo:+st.grupo, data:{text:O.cut((st.ans[st.cur] || '').trim(), 600)}}; }
 function summary(){ return 'O360 · T2.2 Preguntas que orientan\nGrupo ' + st.grupo + ' · Pregunta ' + (st.cur+1) + '\n\n' + ((st.ans[st.cur] || '').trim() || '(sin respuesta escrita)'); }
